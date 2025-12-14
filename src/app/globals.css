@@ -1,0 +1,452 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dark theme (default) */
+:root,
+.dark {
+  --background-start: #0d0d15;
+  --background-end: #191927;
+  --background-card: rgba(25, 25, 39, 0.6);
+  --background-card-darker: rgba(13, 13, 21, 0.8);
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --accent-primary: #0ca5eb;
+  --accent-secondary: #22c566;
+  --accent-warning: #f97316;
+  --scrollbar-track: rgba(25, 25, 39, 0.5);
+  --scrollbar-thumb: rgba(12, 165, 235, 0.4);
+}
+
+/* Light theme */
+.light {
+  --background-start: #f8fafc;
+  --background-end: #e2e8f0;
+  --background-card: rgba(255, 255, 255, 0.9);
+  --background-card-darker: rgba(241, 245, 249, 0.95);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --accent-primary: #0284c7;
+  --accent-secondary: #16a34a;
+  --accent-warning: #ea580c;
+  --scrollbar-track: rgba(226, 232, 240, 0.8);
+  --scrollbar-thumb: rgba(2, 132, 199, 0.5);
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Prevent layout shift when scrollbar appears/disappears */
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+body {
+  background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Light mode body styles */
+.light body {
+  background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
+
+/* Glowing border effect */
+@layer utilities {
+  .glow-border {
+    position: relative;
+  }
+  
+  .glow-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, #0ca5eb, #22c566, #0ca5eb);
+    z-index: -1;
+    opacity: 0.5;
+    filter: blur(8px);
+    transition: opacity 0.3s ease;
+  }
+  
+  .glow-border:hover::before {
+    opacity: 0.8;
+  }
+}
+
+/* Glass morphism */
+@layer utilities {
+  .glass {
+    background: var(--background-card);
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .glass-darker {
+    background: var(--background-card-darker);
+    border: 1px solid var(--border-color);
+  }
+}
+
+/* Light mode specific overrides */
+.light .glass {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.light .glass-darker {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode text colors */
+.light .text-white {
+  color: var(--text-primary);
+}
+
+.light .text-midnight-300,
+.light .text-midnight-400,
+.light .text-midnight-500 {
+  color: var(--text-secondary);
+}
+
+.light .text-midnight-600 {
+  color: var(--text-muted);
+}
+
+/* Light mode backgrounds */
+.light .bg-midnight-800,
+.light .bg-midnight-800\/50,
+.light .bg-midnight-900,
+.light .bg-midnight-900\/50 {
+  background-color: rgba(241, 245, 249, 0.8);
+}
+
+.light .bg-midnight-950 {
+  background-color: #f8fafc;
+}
+
+/* Light mode borders */
+.light .border-white\/5,
+.light .border-white\/10 {
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Light mode hover states */
+.light .hover\:bg-white\/5:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.light .hover\:text-white:hover {
+  color: var(--text-primary);
+}
+
+/* Light mode specific row styling */
+.light .theme-row {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+}
+
+.light .theme-row:hover {
+  background-color: rgba(226, 232, 240, 1) !important;
+}
+
+/* Light mode text adjustments */
+.light .text-white {
+  color: #0f172a !important;
+}
+
+.light .text-midnight-300 {
+  color: #475569 !important;
+}
+
+.light .text-midnight-400 {
+  color: #64748b !important;
+}
+
+.light .text-midnight-500 {
+  color: #94a3b8 !important;
+}
+
+/* Light mode card backgrounds */
+.light .bg-midnight-700 {
+  background-color: #e2e8f0 !important;
+}
+
+.light .bg-midnight-800\/50 {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+}
+
+.light .bg-midnight-900\/50 {
+  background-color: rgba(241, 245, 249, 0.9) !important;
+}
+
+.light .bg-midnight-900 {
+  background-color: #e2e8f0 !important;
+}
+
+/* Light mode gradients for mesh pattern */
+.light .mesh-pattern {
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(2, 132, 199, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(22, 163, 74, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(234, 88, 12, 0.04) 0%, transparent 70%);
+}
+
+/* Light mode grid lines */
+.light .grid-lines {
+  background-image: 
+    linear-gradient(rgba(2, 132, 199, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(2, 132, 199, 0.05) 1px, transparent 1px);
+}
+
+/* Light mode accent colors - darker for better contrast */
+.light .text-aurora-400,
+.light .text-aurora-500 {
+  color: #15803d !important; /* darker green */
+}
+
+.light .text-xandeum-400,
+.light .text-xandeum-500 {
+  color: #0369a1 !important; /* darker blue */
+}
+
+.light .text-ember-400,
+.light .text-ember-500 {
+  color: #c2410c !important; /* darker orange */
+}
+
+.light .text-purple-400,
+.light .text-purple-500 {
+  color: #7c3aed !important; /* darker purple */
+}
+
+/* Light mode success/info cards */
+.light .bg-aurora-500\/10,
+.light .bg-aurora-500\/20 {
+  background-color: rgba(21, 128, 61, 0.15) !important;
+}
+
+.light .border-aurora-500\/20,
+.light .border-aurora-500\/30 {
+  border-color: rgba(21, 128, 61, 0.3) !important;
+}
+
+.light .bg-xandeum-500\/10,
+.light .bg-xandeum-500\/20 {
+  background-color: rgba(3, 105, 161, 0.15) !important;
+}
+
+.light .border-xandeum-500\/20,
+.light .border-xandeum-500\/30 {
+  border-color: rgba(3, 105, 161, 0.3) !important;
+}
+
+.light .bg-ember-500\/10,
+.light .bg-ember-500\/20 {
+  background-color: rgba(194, 65, 12, 0.15) !important;
+}
+
+.light .border-ember-500\/20,
+.light .border-ember-500\/30 {
+  border-color: rgba(194, 65, 12, 0.3) !important;
+}
+
+.light .bg-purple-500\/10,
+.light .bg-purple-500\/20 {
+  background-color: rgba(124, 58, 237, 0.15) !important;
+}
+
+.light .border-purple-500\/20,
+.light .border-purple-500\/30 {
+  border-color: rgba(124, 58, 237, 0.3) !important;
+}
+
+/* Gradient text */
+@layer utilities {
+  .gradient-text {
+    background: linear-gradient(135deg, #0ca5eb 0%, #22c566 50%, #0ca5eb 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s linear infinite;
+  }
+}
+
+/* Light mode gradient text - darker colors */
+.light .gradient-text {
+  background: linear-gradient(135deg, #0369a1 0%, #15803d 50%, #0369a1 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Mesh background pattern */
+@layer utilities {
+  .mesh-pattern {
+    background-image: 
+      radial-gradient(circle at 25% 25%, rgba(12, 165, 235, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(34, 197, 102, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(249, 115, 22, 0.05) 0%, transparent 70%);
+  }
+}
+
+/* Status indicator pulse */
+@keyframes status-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 currentColor;
+  }
+  50% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+
+.status-online {
+  animation: status-pulse 2s ease-in-out infinite;
+  color: #22c566;
+}
+
+.status-offline {
+  color: #ef4444;
+}
+
+.status-syncing {
+  animation: status-pulse 1s ease-in-out infinite;
+  color: #f97316;
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  will-change: transform;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 60px rgba(12, 165, 235, 0.15);
+}
+
+/* Light mode card hover */
+.light .card-hover:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 60px rgba(2, 132, 199, 0.1);
+}
+
+/* Data grid lines */
+.grid-lines {
+  background-image: 
+    linear-gradient(rgba(12, 165, 235, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(12, 165, 235, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Number counter animation */
+@keyframes count-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-count {
+  animation: count-up 0.5s ease-out forwards;
+}
+
+/* Loading skeleton */
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+/* Fade in animation for table rows */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slow pulse for logo */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+
+/* Slow rotation for logo */
+@keyframes rotate-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-rotate-slow {
+  animation: rotate-slow 20s linear infinite;
+}
+
+/* Shimmer animation for gradient text */
+@keyframes shimmer {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
