@@ -18,6 +18,107 @@ type SortDirection = 'asc' | 'desc'
 type StatusFilter = 'all' | 'online' | 'offline' | 'syncing'
 type VisibilityFilter = 'all' | 'public' | 'private'
 
+// Mobile Card View Component
+function PNodeCard({ pnode, index }: { pnode: PNode; index: number }) {
+  const [copied, setCopied] = useState(false)
+  const [expanded, setExpanded] = useState(false)
+
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (await copyToClipboard(pnode.pubkey)) {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
+  const statusVariant = pnode.status === 'online' ? 'success' : pnode.status === 'syncing' ? 'warning' : 'danger'
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.02 }}
+      className="border border-white/5 rounded-lg bg-midnight-900/30 hover:bg-midnight-900/50 transition-colors"
+    >
+      <div 
+        onClick={() => setExpanded(!expanded)} 
+        className="p-4 cursor-pointer"
+      >
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className={cn('w-2 h-2 rounded-full flex-shrink-0 mt-1.5', pnode.status === 'online' && 'bg-aurora-400 shadow-lg shadow-aurora-400/50', pnode.status === 'syncing' && 'bg-ember-400', pnode.status === 'offline' && 'bg-red-400')} />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-mono text-sm text-white truncate">{shortenPubkey(pnode.pubkey, 8)}</span>
+                <button onClick={handleCopy} className="p-1 text-midnight-500 hover:text-xandeum-400 flex-shrink-0">
+                  {copied ? <Check className="w-3.5 h-3.5 text-aurora-400" /> : <Copy className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+              <p className="text-xs text-midnight-500 truncate">{pnode.address}</p>
+            </div>
+          </div>
+          <Badge variant={statusVariant} dot className="flex-shrink-0">{pnode.status}</Badge>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-3 text-sm">
+          <div>
+            <p className="text-xs text-midnight-500 mb-0.5">Visibility</p>
+            <div className="flex items-center gap-1.5">
+              {pnode.isPublic ? <><Globe className="w-3.5 h-3.5 text-aurora-400" /><span className="text-xs text-aurora-400">Public</span></> : <><Lock className="w-3.5 h-3.5 text-midnight-400" /><span className="text-xs text-midnight-400">Private</span></>}
+            </div>
+          </div>
+          <div>
+            <p className="text-xs text-midnight-500 mb-0.5">Version</p>
+            <p className="text-xs text-midnight-300">{pnode.version}</p>
+          </div>
+          <div className="col-span-2">
+            <p className="text-xs text-midnight-500 mb-1">Storage</p>
+            <div className="flex justify-between text-xs mb-1">
+              <span className="text-midnight-400">{pnode.storageUsedFormatted}</span>
+              <span className="text-midnight-500">{pnode.storageCommittedFormatted}</span>
+            </div>
+            <Progress value={pnode.storageUsagePercent} size="sm" variant={pnode.storageUsagePercent > 90 ? 'danger' : pnode.storageUsagePercent > 70 ? 'warning' : 'success'} />
+          </div>
+          <div>
+            <p className="text-xs text-midnight-500 mb-0.5">Uptime</p>
+            <p className="text-xs text-midnight-300">{pnode.uptimeFormatted}</p>
+          </div>
+        </div>
+        
+        <button className="mt-3 w-full flex items-center justify-center gap-1 text-xs text-midnight-500 hover:text-white transition-colors">
+          {expanded ? <><ChevronUp className="w-4 h-4" /> Less details</> : <><ChevronDown className="w-4 h-4" /> More details</>}
+        </button>
+      </div>
+      
+      {expanded && (
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: 'auto', opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          className="border-t border-white/5 p-4 pt-3"
+        >
+          <div className="grid grid-cols-1 gap-3 text-sm">
+            <div>
+              <p className="text-xs text-midnight-500 mb-1">Full Pubkey</p>
+              <p className="text-xs font-mono text-midnight-300 break-all">{pnode.pubkey}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <p className="text-xs text-midnight-500 mb-1">IP Address</p>
+                <p className="text-xs text-midnight-300">{pnode.ip}:{pnode.port}</p>
+              </div>
+              <div>
+                <p className="text-xs text-midnight-500 mb-1">RPC Port</p>
+                <p className="text-xs text-midnight-300">{pnode.rpcPort}</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </motion.div>
+  )
+}
+
 function PNodeRow({ pnode, index }: { pnode: PNode; index: number }) {
   const [copied, setCopied] = useState(false)
   const [expanded, setExpanded] = useState(false)
@@ -243,110 +344,169 @@ export function PNodeTable() {
         </AnimatePresence>
       </CardHeader>
       {isLoading ? <div className="p-4"><TableSkeleton rows={10} /></div> : (
-        <div className="overflow-auto max-h-[60vh]">
-          <table className="w-full">
-            <thead className="sticky top-0 z-10 bg-[#13131f] shadow-[0_-10px_0_0_#13131f]">
-              <tr className="border-b border-midnight-700">
-                <th className="text-left py-4 pl-4 pr-2 text-xs font-semibold text-midnight-300 uppercase tracking-wider">Status</th>
-                <th className="text-left py-4 px-3 text-xs font-semibold text-midnight-300 uppercase tracking-wider">pNode</th>
-                <th className="text-left py-4 px-3 text-xs font-semibold text-midnight-300 uppercase tracking-wider">State</th>
-                <th className="text-left py-4 px-3 text-xs font-semibold text-midnight-300 uppercase tracking-wider hidden md:table-cell">Visibility</th>
-                <th className="text-left py-4 px-3 text-xs font-semibold text-midnight-300 uppercase tracking-wider hidden md:table-cell">Version</th>
-                <th className="text-left py-4 px-3 text-xs font-semibold text-midnight-300 uppercase tracking-wider hidden lg:table-cell">Storage</th>
-                <th className="text-left py-4 px-3 text-xs font-semibold text-midnight-300 uppercase tracking-wider hidden xl:table-cell">Uptime</th>
-                <th className="text-left py-4 pl-3 pr-4 text-xs font-semibold text-midnight-300 uppercase tracking-wider w-12"></th>
-              </tr>
-            </thead>
-            <tbody key={`${statusFilter}-${visibilityFilter}-${searchQuery}-${currentPage}`}>
-              {paginatedPNodes.map((pnode, i) => (
-                <PNodeRow key={`${pnode.id}-${pnode.pubkey}`} pnode={pnode} index={i} />
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <>
+          {/* Mobile Card View */}
+          <div className="lg:hidden p-4 space-y-3 max-h-[60vh] overflow-y-auto">
+            {paginatedPNodes.map((pnode, i) => (
+              <PNodeCard key={`${pnode.id}-${pnode.pubkey}`} pnode={pnode} index={i} />
+            ))}
+          </div>
+          
+          {/* Desktop Table View */}
+          <div className="hidden lg:block overflow-auto max-h-[60vh]">
+            <table className="w-full">
+              <thead className="sticky top-0 z-10 bg-[#13131f] shadow-[0_-10px_0_0_#13131f]">
+                <tr className="border-b border-midnight-700">
+                  <th className="text-left py-4 pl-4 pr-2 text-xs font-semibold text-midnight-300 uppercase tracking-wider">Status</th>
+                  <th className="text-left py-4 px-3 text-xs font-semibold text-midnight-300 uppercase tracking-wider">pNode</th>
+                  <th className="text-left py-4 px-3 text-xs font-semibold text-midnight-300 uppercase tracking-wider">State</th>
+                  <th className="text-left py-4 px-3 text-xs font-semibold text-midnight-300 uppercase tracking-wider">Visibility</th>
+                  <th className="text-left py-4 px-3 text-xs font-semibold text-midnight-300 uppercase tracking-wider">Version</th>
+                  <th className="text-left py-4 px-3 text-xs font-semibold text-midnight-300 uppercase tracking-wider">Storage</th>
+                  <th className="text-left py-4 px-3 text-xs font-semibold text-midnight-300 uppercase tracking-wider hidden xl:table-cell">Uptime</th>
+                  <th className="text-left py-4 pl-3 pr-4 text-xs font-semibold text-midnight-300 uppercase tracking-wider w-12"></th>
+                </tr>
+              </thead>
+              <tbody key={`${statusFilter}-${visibilityFilter}-${searchQuery}-${currentPage}`}>
+                {paginatedPNodes.map((pnode, i) => (
+                  <PNodeRow key={`${pnode.id}-${pnode.pubkey}`} pnode={pnode} index={i} />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
       
       {/* Pagination Controls */}
       {!isLoading && filteredPNodes.length > 0 && (
-        <div className="p-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-midnight-400">
-              Showing {startIndex + 1}-{Math.min(endIndex, filteredPNodes.length)} of {filteredPNodes.length}
-            </span>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-midnight-500">Per page:</span>
-              <select 
-                value={itemsPerPage}
-                onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-                className="bg-midnight-800 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-xandeum-500"
-              >
-                {ITEMS_PER_PAGE_OPTIONS.map(option => (
-                  <option key={option} value={option}>{option}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setCurrentPage(1)}
-              disabled={currentPage === 1}
-            >
-              First
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-            >
-              Prev
-            </Button>
-            
-            <div className="flex items-center gap-1">
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                let pageNum: number
-                if (totalPages <= 5) {
-                  pageNum = i + 1
-                } else if (currentPage <= 3) {
-                  pageNum = i + 1
-                } else if (currentPage >= totalPages - 2) {
-                  pageNum = totalPages - 4 + i
-                } else {
-                  pageNum = currentPage - 2 + i
-                }
-                return (
-                  <Button
-                    key={pageNum}
-                    variant={currentPage === pageNum ? 'primary' : 'ghost'}
-                    size="sm"
-                    onClick={() => setCurrentPage(pageNum)}
-                    className="min-w-[36px]"
+        <div className="p-4 border-t border-white/5">
+          <div className="flex flex-col gap-4">
+            {/* Mobile: Simplified pagination */}
+            <div className="flex flex-col sm:hidden gap-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-midnight-400">
+                  {startIndex + 1}-{Math.min(endIndex, filteredPNodes.length)} of {filteredPNodes.length}
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-midnight-500">Per page:</span>
+                  <select 
+                    value={itemsPerPage}
+                    onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                    className="bg-midnight-800 border border-white/10 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-xandeum-500"
                   >
-                    {pageNum}
-                  </Button>
-                )
-              })}
+                    {ITEMS_PER_PAGE_OPTIONS.map(option => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="flex-1"
+                >
+                  Previous
+                </Button>
+                <span className="text-xs text-midnight-400 px-2">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="flex-1"
+                >
+                  Next
+                </Button>
+              </div>
             </div>
             
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setCurrentPage(totalPages)}
-              disabled={currentPage === totalPages}
-            >
-              Last
-            </Button>
+            {/* Desktop: Full pagination */}
+            <div className="hidden sm:flex flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-midnight-400">
+                  Showing {startIndex + 1}-{Math.min(endIndex, filteredPNodes.length)} of {filteredPNodes.length}
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-midnight-500">Per page:</span>
+                  <select 
+                    value={itemsPerPage}
+                    onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                    className="bg-midnight-800 border border-white/10 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-xandeum-500"
+                  >
+                    {ITEMS_PER_PAGE_OPTIONS.map(option => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                >
+                  First
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Prev
+                </Button>
+                
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum: number
+                    if (totalPages <= 5) {
+                      pageNum = i + 1
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i
+                    } else {
+                      pageNum = currentPage - 2 + i
+                    }
+                    return (
+                      <Button
+                        key={pageNum}
+                        variant={currentPage === pageNum ? 'primary' : 'ghost'}
+                        size="sm"
+                        onClick={() => setCurrentPage(pageNum)}
+                        className="min-w-[36px]"
+                      >
+                        {pageNum}
+                      </Button>
+                    )
+                  })}
+                </div>
+                
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages}
+                >
+                  Last
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       )}

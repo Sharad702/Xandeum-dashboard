@@ -32,18 +32,25 @@ const iconColorClasses = {
 
 function StatCard({ title, value, subtitle, icon, color = 'blue', delay = 0 }: StatCardProps) {
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay }}>
-      <Card className={`bg-gradient-to-br ${colorClasses[color]} overflow-hidden relative`} hover>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      transition={{ duration: 0.5, delay }}
+      className="h-full"
+    >
+      <Card className={`bg-gradient-to-br ${colorClasses[color]} overflow-hidden relative h-full flex flex-col`} hover>
         <div className="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-gradient-to-br from-white/5 to-transparent blur-2xl" />
-        <div className="relative">
-          <div className="flex items-start justify-between mb-3">
+        <div className="relative flex flex-col flex-1 min-h-0">
+          <div className="flex items-start justify-between mb-3 flex-shrink-0">
             <div className={`p-2.5 rounded-lg ${iconColorClasses[color]}`}>{icon}</div>
           </div>
-          <p className="text-xs text-midnight-400 font-medium uppercase tracking-wider mb-1">{title}</p>
-          <motion.p className="text-2xl sm:text-3xl font-bold text-white font-display" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: delay + 0.2 }}>
+          <p className="text-xs text-midnight-400 font-medium uppercase tracking-wider mb-1 flex-shrink-0">{title}</p>
+          <motion.p className="text-2xl sm:text-3xl font-bold text-white font-display flex-shrink-0 mb-2" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay: delay + 0.2 }}>
             {value}
           </motion.p>
-          {subtitle && <p className="text-xs text-midnight-400 mt-1">{subtitle}</p>}
+          <div className="mt-auto pt-1 h-[32px] flex items-end flex-shrink-0">
+            {subtitle && <p className="text-xs text-midnight-400 leading-tight">{subtitle}</p>}
+          </div>
         </div>
       </Card>
     </motion.div>
@@ -56,7 +63,7 @@ export function StatsGrid() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8" style={{ gridAutoRows: '1fr' }}>
         {[...Array(4)].map((_, i) => <StatCardSkeleton key={i} />)}
       </div>
     )
@@ -71,11 +78,15 @@ export function StatsGrid() {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8" style={{ gridAutoRows: '1fr' }}>
+      {/* Position 1: Total pNodes */}
       <StatCard title="Total pNodes" value={stats.totalNodes} subtitle={`${stats.activeNodes} active`} icon={<Server className="w-5 h-5" />} color="blue" delay={0} />
-      <StatCard title="Total Storage" value={formatBytes(stats.totalStorageCommitted)} subtitle={`${formatBytes(stats.totalStorageUsed)} used`} icon={<HardDrive className="w-5 h-5" />} color="green" delay={0.1} />
-      <StatCard title="Avg Uptime" value={formatUptime(stats.averageUptime)} subtitle="Network reliability" icon={<Clock className="w-5 h-5" />} color="orange" delay={0.2} />
-      <StatCard title="Versions" value={Object.keys(stats.versions).length} subtitle="Unique versions" icon={<Server className="w-5 h-5" />} color="purple" delay={0.3} />
+      {/* Position 2: Public Nodes */}
+      <StatCard title="Public Nodes" value={stats.publicNodes} subtitle={`${stats.privateNodes} private`} icon={<Globe className="w-5 h-5" />} color="purple" delay={0.1} />
+      {/* Position 3: Total Storage */}
+      <StatCard title="Total Storage" value={formatBytes(stats.totalStorageCommitted)} subtitle={`${formatBytes(stats.totalStorageUsed)} used`} icon={<HardDrive className="w-5 h-5" />} color="green" delay={0.2} />
+      {/* Position 4: Avg Uptime */}
+      <StatCard title="Avg Uptime" value={formatUptime(stats.averageUptime)} subtitle="Network reliability" icon={<Clock className="w-5 h-5" />} color="orange" delay={0.3} />
     </div>
   )
 }

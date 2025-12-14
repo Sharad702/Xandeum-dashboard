@@ -2,10 +2,10 @@
 
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
-import { ReactNode, ButtonHTMLAttributes } from 'react'
+import { ReactNode, ComponentPropsWithoutRef } from 'react'
 import { Loader2 } from 'lucide-react'
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends Omit<ComponentPropsWithoutRef<'button'>, 'onDrag' | 'onDragEnd' | 'onDragStart' | 'onDragCapture'> {
   children: ReactNode
   variant?: 'primary' | 'secondary' | 'ghost' | 'outline' | 'danger'
   size?: 'sm' | 'md' | 'lg'
@@ -40,6 +40,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   return (
+    // @ts-expect-error - Framer Motion's drag handlers conflict with React's drag handlers, but we've excluded them from props
     <motion.button
       whileHover={{ scale: disabled || loading ? 1 : 1.02 }}
       whileTap={{ scale: disabled || loading ? 1 : 0.98 }}
