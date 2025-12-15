@@ -207,6 +207,12 @@ body {
   background-color: #e2e8f0 !important;
 }
 
+/* Light mode table header background */
+.light .table-header-bg {
+  background-color: rgba(241, 245, 249, 0.95) !important;
+  box-shadow: 0 -10px 0 0 rgba(241, 245, 249, 0.95) !important;
+}
+
 /* Light mode gradients for mesh pattern */
 .light .mesh-pattern {
   background-image: 
@@ -282,6 +288,25 @@ body {
 .light .border-purple-500\/20,
 .light .border-purple-500\/30 {
   border-color: rgba(124, 58, 237, 0.3) !important;
+}
+
+/* Light mode Badge visibility fixes */
+.light .bg-midnight-700.text-midnight-200 {
+  background-color: rgba(241, 245, 249, 0.9) !important;
+  color: #475569 !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+.light .bg-midnight-700 {
+  background-color: rgba(241, 245, 249, 0.9) !important;
+}
+
+.light .text-midnight-200 {
+  color: #475569 !important;
+}
+
+.light .border-midnight-600 {
+  border-color: rgba(0, 0, 0, 0.15) !important;
 }
 
 /* Gradient text */

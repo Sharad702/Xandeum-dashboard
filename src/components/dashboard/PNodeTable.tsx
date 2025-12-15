@@ -355,7 +355,7 @@ export function PNodeTable() {
           {/* Desktop Table View */}
           <div className="hidden lg:block overflow-auto max-h-[60vh]">
             <table className="w-full">
-              <thead className="sticky top-0 z-10 bg-[#13131f] shadow-[0_-10px_0_0_#13131f]">
+              <thead className="sticky top-0 z-10 bg-[#13131f] shadow-[0_-10px_0_0_#13131f] table-header-bg">
                 <tr className="border-b border-midnight-700">
                   <th className="text-left py-4 pl-4 pr-2 text-xs font-semibold text-midnight-300 uppercase tracking-wider">Status</th>
                   <th className="text-left py-4 px-3 text-xs font-semibold text-midnight-300 uppercase tracking-wider">pNode</th>
